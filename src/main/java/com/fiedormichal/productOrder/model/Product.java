@@ -4,14 +4,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
-import java.util.List;
+
 
 @Entity
 @Getter
 @Setter
-@Table(name="product_table")
+@Table(name = "product_table")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +23,4 @@ public class Product {
     @DecimalMin(value = "1.00")
     @Digits(integer = 4, fraction = 2)
     private BigDecimal price;
-    @ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
-    private List<Order>orders;
 }

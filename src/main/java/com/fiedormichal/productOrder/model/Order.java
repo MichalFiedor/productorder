@@ -16,13 +16,16 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "order_product")
-    private List<Product>products;
+    private List<Product> products;
     private BigDecimal totalCost;
-    private LocalDateTime orderedAt;
+    private LocalDateTime orderedAt = LocalDateTime.now();
 
-    public Order(){
-        this.orderedAt= LocalDateTime.now();
+    public void addProducts(List<Product> productsFromOrder) {
+        products.clear();
+        for (Product product : productsFromOrder) {
+            products.add(product);
+        }
     }
 }

@@ -1,15 +1,21 @@
 package com.fiedormichal.productOrder.service;
 
+import com.fiedormichal.productOrder.exception.IncorrectTimePeriodException;
+import com.fiedormichal.productOrder.exception.OrderNotFoundException;
 import com.fiedormichal.productOrder.exception.ProductNotFoundException;
 import com.fiedormichal.productOrder.model.Order;
 import com.fiedormichal.productOrder.model.Product;
+import com.fiedormichal.productOrder.model.TimePeriod;
+import com.fiedormichal.productOrder.model.TimePeriodService;
+import com.fiedormichal.productOrder.parser.DateParser;
 import com.fiedormichal.productOrder.repository.OrderRepository;
 import com.fiedormichal.productOrder.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Collections;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,11 +23,45 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final ProductRepository productRepository;
+    private final ProductService productService;
+    private final TimePeriodService timePeriodService;
 
+    @Transactional
     public Order addOrder(Order order){
+        List<Product> productsFromOrder = getAllProductsFromOrder(order);
+        order.addProducts(productsFromOrder);
         order.setTotalCost(getTotalCost(order));
+
         return orderRepository.save(order);
+    }
+
+    @Transactional
+    public Order recalculateOrder(int orderId) {
+        Order orderFromDB = findById(orderId);
+        orderFromDB.setTotalCost(getTotalCost(orderFromDB));
+
+        return null;
+    }
+
+    public List<Order> getOrdersFromPeriod(TimePeriod period) {
+        LocalDateTime beginning = timePeriodService.prepareBeginningOfPeriod(period.getBeginningOfPeriod());
+        LocalDateTime end = timePeriodService.prepareEndOfPeriod(period.getEndOfPeriod());
+        if(beginning.isAfter(end)){
+            throw new IncorrectTimePeriodException("Beginning of period is after end of period.");
+        }
+
+        return orderRepository.findAllOrdersForGivenPeriod(beginning, end);
+    }
+
+    public Order findById(int id){
+        return orderRepository.findById(id).orElseThrow(
+                ()-> new OrderNotFoundException("Order with id:" + id + " does not exist."));
+    }
+
+    private List<Product> getAllProductsFromOrder(Order order) {
+        return order.getProducts().stream()
+                .map(product -> productService.findProduct(product.getId()))
+                .collect(Collectors.toList());
     }
 
     private BigDecimal getTotalCost(Order order){
@@ -30,15 +70,8 @@ public class OrderService {
                 .map(product -> product.getId())
                 .collect(Collectors.toList());
         for(Integer productId: productsID){
-            totalCost = totalCost.add(getProductPrice(productId));
+            totalCost = totalCost.add(productService.getProductPrice(productId));
         }
     return totalCost;
     }
-
-    private BigDecimal getProductPrice(Integer productId) {
-        Product product = productRepository.findById(productId).orElseThrow(
-                () -> new ProductNotFoundException("Product with id:" + productId + " does not exist."));
-        return product.getPrice();
-    }
-
 }
