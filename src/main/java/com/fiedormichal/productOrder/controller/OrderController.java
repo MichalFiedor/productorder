@@ -14,9 +14,8 @@ import javax.validation.Valid;
 public class OrderController {
     private final OrderService orderService;
 
-
     @GetMapping("/orders")
-    public ResponseEntity<Object> getOrdersFromPeriod(@RequestBody TimePeriod period){
+    public ResponseEntity<Object> getOrdersFromPeriod(@Valid @RequestBody TimePeriod period){
 
         return ResponseEntity.ok().body(orderService.getOrdersFromPeriod(period));
     }

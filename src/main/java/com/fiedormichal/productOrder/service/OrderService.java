@@ -2,14 +2,10 @@ package com.fiedormichal.productOrder.service;
 
 import com.fiedormichal.productOrder.exception.IncorrectTimePeriodException;
 import com.fiedormichal.productOrder.exception.OrderNotFoundException;
-import com.fiedormichal.productOrder.exception.ProductNotFoundException;
 import com.fiedormichal.productOrder.model.Order;
 import com.fiedormichal.productOrder.model.Product;
 import com.fiedormichal.productOrder.model.TimePeriod;
-import com.fiedormichal.productOrder.model.TimePeriodService;
-import com.fiedormichal.productOrder.parser.DateParser;
 import com.fiedormichal.productOrder.repository.OrderRepository;
-import com.fiedormichal.productOrder.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,16 +35,12 @@ public class OrderService {
     public Order recalculateOrder(int orderId) {
         Order orderFromDB = findById(orderId);
         orderFromDB.setTotalCost(getTotalCost(orderFromDB));
-
-        return null;
+        return orderFromDB;
     }
 
     public List<Order> getOrdersFromPeriod(TimePeriod period) {
         LocalDateTime beginning = timePeriodService.prepareBeginningOfPeriod(period.getBeginningOfPeriod());
         LocalDateTime end = timePeriodService.prepareEndOfPeriod(period.getEndOfPeriod());
-        if(beginning.isAfter(end)){
-            throw new IncorrectTimePeriodException("Beginning of period is after end of period.");
-        }
 
         return orderRepository.findAllOrdersForGivenPeriod(beginning, end);
     }
