@@ -19,7 +19,6 @@ public class OrderController {
 
     @GetMapping("/orders")
     public ResponseEntity<Object> getOrdersFromPeriod(@Valid @RequestBody TimePeriod period){
-
         return ResponseEntity.ok().body(orderService.getOrdersFromPeriod(period));
     }
 

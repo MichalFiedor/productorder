@@ -56,8 +56,6 @@ public class OrderService {
                 ()-> new OrderNotFoundException("Order with id:" + id + " does not exist."));
     }
 
-
-
     private BigDecimal getTotalCost(Order order){
         BigDecimal totalCost = BigDecimal.ZERO;
         List<Integer> productsID = order.getProducts().stream()

@@ -6,6 +6,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,7 +24,7 @@ public class Order {
     private LocalDateTime orderedAt = LocalDateTime.now();
 
     public void addProducts(List<Product> productsFromOrder) {
-        products.clear();
+        products = new ArrayList<>();
         for (Product product : productsFromOrder) {
             products.add(product);
         }
