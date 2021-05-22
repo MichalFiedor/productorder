@@ -25,7 +25,7 @@ public class TimePeriodService {
 
     public void endIsAfterBeginning(LocalDateTime beginning, LocalDateTime end){
         if(beginning.isAfter(end)){
-            throw new IncorrectDateException("End of period must be before beginning of period");
+            throw new IncorrectDateException("End of period must be after beginning of period");
         }
     }
 }

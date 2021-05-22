@@ -4,7 +4,6 @@ import com.fiedormichal.productOrder.model.Product;
 import com.fiedormichal.productOrder.service.ProductService;
 import com.fiedormichal.productOrder.validator.schemaValidator.ValidJson;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +14,6 @@ import static com.fiedormichal.productOrder.validator.schemaValidator.SchemaPath
 
 @RestController
 @RequiredArgsConstructor
-@Log4j2
 public class ProductController {
 
     private final ProductService productService;
