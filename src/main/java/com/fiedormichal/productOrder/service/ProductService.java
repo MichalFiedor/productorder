@@ -1,6 +1,7 @@
 package com.fiedormichal.productOrder.service;
 
 import com.fiedormichal.productOrder.exception.ProductNotFoundException;
+import com.fiedormichal.productOrder.model.Order;
 import com.fiedormichal.productOrder.model.Product;
 import com.fiedormichal.productOrder.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,12 +33,22 @@ public class ProductService {
     @Transactional
     public Product updateProduct(Product product) {
         Product productFromDB = findProduct(product.getId());
-        productFromDB.setName(product.getName());
-        productFromDB.setPrice(product.getPrice());
+        if(product.getName()!=null){
+            productFromDB.setName(product.getName());
+        }
+        if(product.getPrice()!=null){
+            productFromDB.setPrice(product.getPrice());
+        }
         return productFromDB;
     }
 
     public BigDecimal getProductPrice(Integer productId) {
         return findProduct(productId).getPrice();
+    }
+
+    public List<Product> getAllProductsFromOrder(Order order) {
+        return order.getProducts().stream()
+                .map(product -> findProduct(product.getId()))
+                .collect(Collectors.toList());
     }
 }

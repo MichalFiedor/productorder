@@ -1,6 +1,6 @@
 package com.fiedormichal.productOrder.service;
 
-import com.fiedormichal.productOrder.exception.IncorrectTimePeriodException;
+import com.fiedormichal.productOrder.exception.IncorrectDateException;
 import com.fiedormichal.productOrder.exception.OrderNotFoundException;
 import com.fiedormichal.productOrder.model.Order;
 import com.fiedormichal.productOrder.model.Product;
@@ -24,7 +24,7 @@ public class OrderService {
 
     @Transactional
     public Order addOrder(Order order){
-        List<Product> productsFromOrder = getAllProductsFromOrder(order);
+        List<Product> productsFromOrder = productService.getAllProductsFromOrder(order);
         order.addProducts(productsFromOrder);
         order.setTotalCost(getTotalCost(order));
 
@@ -39,9 +39,15 @@ public class OrderService {
     }
 
     public List<Order> getOrdersFromPeriod(TimePeriod period) {
-        LocalDateTime beginning = timePeriodService.prepareBeginningOfPeriod(period.getBeginningOfPeriod());
-        LocalDateTime end = timePeriodService.prepareEndOfPeriod(period.getEndOfPeriod());
-
+        LocalDateTime beginning;
+        LocalDateTime end;
+        try{
+            beginning = timePeriodService.prepareBeginningOfPeriod(period.getBeginningOfPeriod());
+            end = timePeriodService.prepareEndOfPeriod(period.getEndOfPeriod());
+        }catch (Exception exception){
+            throw new IncorrectDateException("Invalid date format. Correct format: yyyy-MM-dd");
+        }
+        timePeriodService.endIsAfterBeginning(beginning, end);
         return orderRepository.findAllOrdersForGivenPeriod(beginning, end);
     }
 
@@ -50,11 +56,7 @@ public class OrderService {
                 ()-> new OrderNotFoundException("Order with id:" + id + " does not exist."));
     }
 
-    private List<Product> getAllProductsFromOrder(Order order) {
-        return order.getProducts().stream()
-                .map(product -> productService.findProduct(product.getId()))
-                .collect(Collectors.toList());
-    }
+
 
     private BigDecimal getTotalCost(Order order){
         BigDecimal totalCost = BigDecimal.ZERO;

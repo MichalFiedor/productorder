@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "title": "The root schema",
+  "required": [
+    "id"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": "integer",
+      "title": "The id schema"
+    },
+    "name": {
+      "$id": "#/properties/name",
+      "type": "string",
+      "minLength": 2,
+      "title": "The name schema"
+    },
+    "price": {
+      "$id": "#/properties/price",
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10000,
+      "title": "The price schema"
+    }
+  },
+  "additionalProperties": true
+}
