@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "title": "Order schema",
+  "required": [
+    "products"
+  ],
+  "properties": {
+    "products": {
+      "$id": "#/properties/products",
+      "type": "array",
+      "title": "The products schema",
+      "minItems": 1,
+      "additionalItems": true,
+      "items": {
+        "$id": "#/properties/products/items",
+        "anyOf": [
+          {
+            "$id": "#/properties/products/items/anyOf/0",
+            "type": "object",
+            "title": "The first anyOf schema",
+            "minimum": 1,
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "$id": "#/properties/products/items/anyOf/0/properties/id",
+                "type": "integer",
+                "title": "The id schema"
+              }
+            },
+            "additionalProperties": true
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": true
+}
