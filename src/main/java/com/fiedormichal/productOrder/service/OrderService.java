@@ -7,6 +7,7 @@ import com.fiedormichal.productOrder.model.Product;
 import com.fiedormichal.productOrder.model.TimePeriod;
 import com.fiedormichal.productOrder.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductService productService;
@@ -27,8 +29,9 @@ public class OrderService {
         List<Product> productsFromOrder = productService.getAllProductsFromOrder(order);
         order.addProducts(productsFromOrder);
         order.setTotalCost(getTotalCost(order));
-
-        return orderRepository.save(order);
+        Order addedOrder = orderRepository.save(order);
+        log.info("Order with id: " + addedOrder.getId() + " and total cost: " + addedOrder.getTotalCost() + " has been saved");
+        return addedOrder;
     }
 
     @Transactional
@@ -48,7 +51,10 @@ public class OrderService {
             throw new IncorrectDateException("Invalid date format. Correct format: yyyy-MM-dd");
         }
         timePeriodService.endIsAfterBeginning(beginning, end);
-        return orderRepository.findAllOrdersForGivenPeriod(beginning, end);
+        List<Order> ordersFromGivenPeriod = orderRepository.findAllOrdersForGivenPeriod(beginning, end);
+        log.info("Orders("+ ordersFromGivenPeriod.size() + ") from " + period.getBeginningOfPeriod()
+                + " to " + period.getEndOfPeriod() + " have been found");
+        return ordersFromGivenPeriod;
     }
 
     public Order findById(int id){

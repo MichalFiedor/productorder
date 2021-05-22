@@ -4,6 +4,7 @@ package com.fiedormichal.productOrder.exception;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fiedormichal.productOrder.apierror.ApiError;
 import com.networknt.schema.ValidationMessage;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 import static com.fiedormichal.productOrder.apierror.ApiErrorMsg.*;
 
 @RestControllerAdvice
+@Log4j2
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
@@ -96,7 +98,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleJsonParseException(JsonParseException ex){
         List<String> errors = new ArrayList<>();
         errors.add(ex.getMessage());
-//        log.info("Occurred " + ex.getClass());
+        log.info("Occurred " + ex.getClass());
         return buildResponseEntity(getApiError(errors, HttpStatus.BAD_REQUEST, MALFORMED_JSON_REQUEST.getValue()));
     }
 
@@ -109,12 +111,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         Map<String, Object> validationFailedDetails = new HashMap<>();
         validationFailedDetails.put("errors", errors);
         validationFailedDetails.put("message", "Json validation failed");
-//        log.info("Occurred " + ex.getClass());
+        log.info("Occurred " + ex.getClass());
         return buildResponseEntity(getApiError(errors, HttpStatus.BAD_REQUEST, VALIDATION_ERROR.getValue()));
     }
-
-
-
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     protected ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex){
@@ -128,6 +127,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleDateTimeParse(IncorrectDateException ex){
         List<String> errors = new ArrayList<>();
         errors.add(ex.getMessage());
+        log.info("Occurred " + ex.getClass());
 
         return buildResponseEntity(getApiError(errors, HttpStatus.BAD_REQUEST, INVALID_DATE_FORMAT.getValue()));
     }
@@ -136,6 +136,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<?> handleOrderNotFound(OrderNotFoundException ex) {
         List<String> errors = new ArrayList<>();
         errors.add(ex.getMessage());
+        log.info("Occurred " + ex.getClass());
 
         return buildResponseEntity(getApiError(errors, HttpStatus.BAD_REQUEST, ORDER_NOT_FOUND.getValue()));
     }
@@ -144,6 +145,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<?> handleProductNotFound(ProductNotFoundException ex) {
         List<String> errors = new ArrayList<>();
         errors.add(ex.getMessage());
+        log.info("Occurred " + ex.getClass());
 
         return buildResponseEntity(getApiError(errors, HttpStatus.BAD_REQUEST, PRODUCT_NOT_FOUND.getValue()));
     }

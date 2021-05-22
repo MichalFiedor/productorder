@@ -5,6 +5,7 @@ import com.fiedormichal.productOrder.model.Order;
 import com.fiedormichal.productOrder.model.Product;
 import com.fiedormichal.productOrder.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +15,15 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class ProductService {
     private final ProductRepository productRepository;
 
     public Product addProduct(Product product){
-        return productRepository.save(product);
+        Product addedProduct = productRepository.save(product);
+        log.info("Product with id: " + addedProduct.getId() + ", name: " + addedProduct.getName() + " and price: "
+                + addedProduct.getPrice() + " has been saved");
+        return addedProduct;
     }
 
     public List<Product>getProducts(){
@@ -39,6 +44,7 @@ public class ProductService {
         if(product.getPrice()!=null){
             productFromDB.setPrice(product.getPrice());
         }
+        log.info("Product with id: " + productFromDB.getId() + " has been updated");
         return productFromDB;
     }
 
