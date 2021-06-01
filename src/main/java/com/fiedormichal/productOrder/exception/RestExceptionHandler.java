@@ -102,15 +102,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(getApiError(errors, HttpStatus.BAD_REQUEST, MALFORMED_JSON_REQUEST.getValue()));
     }
 
-
     @ExceptionHandler(JsonValidationFailedException.class)
     protected ResponseEntity<Object> handleJsonSchemaValidation(JsonValidationFailedException ex){
         List<String> errors =ex.getValidationMessages().stream()
                 .map(ValidationMessage::getMessage)
                 .collect(Collectors.toList());
-        Map<String, Object> validationFailedDetails = new HashMap<>();
-        validationFailedDetails.put("errors", errors);
-        validationFailedDetails.put("message", "Json validation failed");
         log.info("Occurred " + ex.getClass());
         return buildResponseEntity(getApiError(errors, HttpStatus.BAD_REQUEST, VALIDATION_ERROR.getValue()));
     }
